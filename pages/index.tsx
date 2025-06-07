@@ -1,79 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Signup() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [gender, setGender] = useState("");
-  const [showNext, setShowNext] = useState(false);
-  const [showPhone, setShowPhone] = useState(false);
-  const [showGender, setShowGender] = useState(false);
-  const [isComplete, setIsComplete] = useState(false);
-  const [focusTimes, setFocusTimes] = useState<number[]>([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    gender: ""
+  });
 
-  // 디버깅을 위한 useEffect 추가
-  useEffect(() => {
-    console.log('상태 변경:', {
-      name,
-      showNext,
-      email,
-      showPhone,
-      phone,
-      showGender,
-      gender,
-      isComplete
-    });
-  }, [name, showNext, email, showPhone, phone, showGender, gender, isComplete]);
+  const [focusTimes, setFocusTimes] = useState<number[]>([]);
 
   const handleFocus = () => {
     const currentTime = Date.now();
     setFocusTimes(prev => [...prev, currentTime]);
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setName(value);
-    // 입력값이 있으면 다음 필드 표시
-    if (value.trim().length > 0) {
-      setShowNext(true);
-    } else {
-      setShowNext(false);
-      setShowPhone(false);
-      setShowGender(false);
-      setIsComplete(false);
-    }
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    // 입력값이 있으면 다음 필드 표시
-    if (value.trim().length > 0) {
-      setShowPhone(true);
-    } else {
-      setShowPhone(false);
-      setShowGender(false);
-      setIsComplete(false);
-    }
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setPhone(value);
-    // 입력값이 있으면 다음 필드 표시
-    if (value.trim().length > 0) {
-      setShowGender(true);
-    } else {
-      setShowGender(false);
-      setIsComplete(false);
-    }
-  };
-
-  const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setGender(value);
-    // 선택값이 있으면 완료 버튼 표시
-    setIsComplete(value !== "");
+  const handleInputChange = (field: string, value: string) => {
+    console.log(`필드 변경: ${field}, 값: ${value}`);
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleComplete = () => {
@@ -114,7 +61,7 @@ export default function Signup() {
         <div className="h-[200px] flex items-center justify-between">
           <h1 className="text-3xl font-bold">회원가입 실험</h1>
           <div className="text-sm text-gray-500">
-            마지막 수정: 2024-03-21 21:00
+            마지막 수정: 2025-06-07 21:05
           </div>
         </div>
 
@@ -127,9 +74,10 @@ export default function Signup() {
             id="name"
             type="text"
             placeholder="홍길동"
-            value={name}
-            onChange={handleNameChange}
+            value={formData.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
             onFocus={handleFocus}
+            autoComplete="name"
             style={{
               width: '25%',
               height: '2rem',
@@ -143,7 +91,7 @@ export default function Signup() {
         </div>
 
         {/* 이메일 입력 */}
-        {showNext && (
+        {formData.name.trim().length > 0 && (
           <div style={{ marginBottom: '2rem' }}>
             <label htmlFor="email" className="block text-3xl font-medium" style={{ marginBottom: '0.5rem' }}>
               이메일을 입력하세요
@@ -152,9 +100,10 @@ export default function Signup() {
               id="email"
               type="email"
               placeholder="example@example.com"
-              value={email}
-              onChange={handleEmailChange}
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               onFocus={handleFocus}
+              autoComplete="email"
               style={{
                 width: '50%',
                 height: '2rem',
@@ -169,7 +118,7 @@ export default function Signup() {
         )}
 
         {/* 전화번호 입력 */}
-        {showPhone && (
+        {formData.email.trim().length > 0 && (
           <div style={{ marginBottom: '2rem' }}>
             <label htmlFor="phone" className="block text-3xl font-medium" style={{ marginBottom: '0.5rem' }}>
               전화번호를 입력하세요
@@ -178,9 +127,10 @@ export default function Signup() {
               id="phone"
               type="tel"
               placeholder="010-0000-0000"
-              value={phone}
-              onChange={handlePhoneChange}
+              value={formData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
               onFocus={handleFocus}
+              autoComplete="tel"
               style={{
                 width: '50%',
                 height: '2rem',
@@ -195,15 +145,15 @@ export default function Signup() {
         )}
 
         {/* 성별 선택 */}
-        {showGender && (
+        {formData.phone.trim().length > 0 && (
           <div style={{ marginBottom: '2rem' }}>
             <label htmlFor="gender" className="block text-3xl font-medium" style={{ marginBottom: '0.5rem' }}>
               성별을 선택하세요
             </label>
             <select
               id="gender"
-              value={gender}
-              onChange={handleGenderChange}
+              value={formData.gender}
+              onChange={(e) => handleInputChange('gender', e.target.value)}
               onFocus={handleFocus}
               style={{
                 width: '37.5%',
@@ -223,7 +173,7 @@ export default function Signup() {
         )}
 
         {/* 완료 버튼 */}
-        {isComplete && (
+        {formData.gender !== "" && (
           <button
             onClick={handleComplete}
             style={{
