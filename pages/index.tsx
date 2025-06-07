@@ -18,26 +18,39 @@ export default function Signup() {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    console.log('이름 입력값:', value);
+    console.log('이름 길이:', value.trim().length);
     setName(value);
-    setShowNext(value.trim().length > 0);
+    const shouldShowNext = value.trim().length > 0;
+    console.log('다음 필드 표시 여부:', shouldShowNext);
+    setShowNext(shouldShowNext);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    console.log('이메일 입력값:', value);
     setEmail(value);
-    setShowPhone(value.trim().length > 0);
+    const shouldShowPhone = value.trim().length > 0;
+    console.log('전화번호 필드 표시 여부:', shouldShowPhone);
+    setShowPhone(shouldShowPhone);
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    console.log('전화번호 입력값:', value);
     setPhone(value);
-    setShowGender(value.trim().length > 0);
+    const shouldShowGender = value.trim().length > 0;
+    console.log('성별 필드 표시 여부:', shouldShowGender);
+    setShowGender(shouldShowGender);
   };
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
+    console.log('성별 선택값:', value);
     setGender(value);
-    setIsComplete(value !== "");
+    const shouldShowComplete = value !== "";
+    console.log('완료 버튼 표시 여부:', shouldShowComplete);
+    setIsComplete(shouldShowComplete);
   };
 
   const handleComplete = () => {
