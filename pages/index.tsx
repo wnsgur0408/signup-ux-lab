@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -11,6 +11,20 @@ export default function Signup() {
   const [isComplete, setIsComplete] = useState(false);
   const [focusTimes, setFocusTimes] = useState<number[]>([]);
 
+  // 디버깅을 위한 useEffect 추가
+  useEffect(() => {
+    console.log('상태 변경:', {
+      name,
+      showNext,
+      email,
+      showPhone,
+      phone,
+      showGender,
+      gender,
+      isComplete
+    });
+  }, [name, showNext, email, showPhone, phone, showGender, gender, isComplete]);
+
   const handleFocus = () => {
     const currentTime = Date.now();
     setFocusTimes(prev => [...prev, currentTime]);
@@ -18,39 +32,48 @@ export default function Signup() {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log('이름 입력값:', value);
-    console.log('이름 길이:', value.trim().length);
     setName(value);
-    const shouldShowNext = value.trim().length > 0;
-    console.log('다음 필드 표시 여부:', shouldShowNext);
-    setShowNext(shouldShowNext);
+    // 입력값이 있으면 다음 필드 표시
+    if (value.trim().length > 0) {
+      setShowNext(true);
+    } else {
+      setShowNext(false);
+      setShowPhone(false);
+      setShowGender(false);
+      setIsComplete(false);
+    }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log('이메일 입력값:', value);
     setEmail(value);
-    const shouldShowPhone = value.trim().length > 0;
-    console.log('전화번호 필드 표시 여부:', shouldShowPhone);
-    setShowPhone(shouldShowPhone);
+    // 입력값이 있으면 다음 필드 표시
+    if (value.trim().length > 0) {
+      setShowPhone(true);
+    } else {
+      setShowPhone(false);
+      setShowGender(false);
+      setIsComplete(false);
+    }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log('전화번호 입력값:', value);
     setPhone(value);
-    const shouldShowGender = value.trim().length > 0;
-    console.log('성별 필드 표시 여부:', shouldShowGender);
-    setShowGender(shouldShowGender);
+    // 입력값이 있으면 다음 필드 표시
+    if (value.trim().length > 0) {
+      setShowGender(true);
+    } else {
+      setShowGender(false);
+      setIsComplete(false);
+    }
   };
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
-    console.log('성별 선택값:', value);
     setGender(value);
-    const shouldShowComplete = value !== "";
-    console.log('완료 버튼 표시 여부:', shouldShowComplete);
-    setIsComplete(shouldShowComplete);
+    // 선택값이 있으면 완료 버튼 표시
+    setIsComplete(value !== "");
   };
 
   const handleComplete = () => {
@@ -91,7 +114,7 @@ export default function Signup() {
         <div className="h-[200px] flex items-center justify-between">
           <h1 className="text-3xl font-bold">회원가입 실험</h1>
           <div className="text-sm text-gray-500">
-            마지막 수정: 2025-06-07 20:46
+            마지막 수정: 2024-03-21 21:00
           </div>
         </div>
 
