@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -10,16 +10,26 @@ export default function Signup() {
 
   const [focusTimes, setFocusTimes] = useState<number[]>([]);
 
+  // 디버깅을 위한 useEffect 추가
+  useEffect(() => {
+    console.log('현재 폼 데이터:', formData);
+  }, [formData]);
+
   const handleFocus = () => {
     const currentTime = Date.now();
     setFocusTimes(prev => [...prev, currentTime]);
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log(`입력 필드 변경: ${field}, 새 값: "${value}"`);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      console.log('업데이트된 폼 데이터:', newData);
+      return newData;
+    });
   };
 
   const handleComplete = () => {
@@ -54,10 +64,21 @@ export default function Signup() {
     alert(message);
   };
 
+  // 각 필드의 상태를 계산
   const isNameFilled = formData.name.trim() !== "";
   const isEmailFilled = formData.email.trim() !== "";
   const isPhoneFilled = formData.phone.trim() !== "";
   const isGenderFilled = formData.gender !== "";
+
+  // 디버깅을 위한 상태 로깅
+  useEffect(() => {
+    console.log('필드 상태:', {
+      isNameFilled,
+      isEmailFilled,
+      isPhoneFilled,
+      isGenderFilled
+    });
+  }, [isNameFilled, isEmailFilled, isPhoneFilled, isGenderFilled]);
 
   return (
     <div className="w-full min-h-screen px-6 py-16 bg-white text-black">
@@ -65,7 +86,7 @@ export default function Signup() {
         <div className="h-[200px] flex items-center justify-between">
           <h1 className="text-3xl font-bold">회원가입 실험</h1>
           <div className="text-sm text-gray-500">
-            마지막 수정: 2025-06-07 21:15
+            마지막 수정: 2025-06-07 21:20
           </div>
         </div>
 
@@ -79,7 +100,10 @@ export default function Signup() {
             type="text"
             placeholder="홍길동"
             value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => {
+              console.log('이름 입력 이벤트:', e.target.value);
+              handleInputChange('name', e.target.value);
+            }}
             onFocus={handleFocus}
             autoComplete="name"
             style={{
