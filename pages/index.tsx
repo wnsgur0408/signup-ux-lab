@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Signup() {
   const [name, setName] = useState("");
@@ -10,60 +10,62 @@ export default function Signup() {
   const [showGender, setShowGender] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [focusTimes, setFocusTimes] = useState<number[]>([]);
-  const [lastFocusTime, setLastFocusTime] = useState<number | null>(null);
 
   const handleFocus = () => {
     const currentTime = Date.now();
     setFocusTimes(prev => [...prev, currentTime]);
-    setLastFocusTime(currentTime);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    if (value.trim().length > 0 && !showNext) {
+    if (value.trim().length > 0) {
       setShowNext(true);
+    } else {
+      setShowNext(false);
     }
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    if (value.trim().length > 0 && !showPhone) {
+    if (value.trim().length > 0) {
       setShowPhone(true);
+    } else {
+      setShowPhone(false);
     }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPhone(value);
-    if (value.trim().length > 0 && !showGender) {
+    if (value.trim().length > 0) {
       setShowGender(true);
+    } else {
+      setShowGender(false);
     }
   };
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setGender(value);
-    if (value !== "" && !isComplete) {
+    if (value !== "") {
       setIsComplete(true);
+    } else {
+      setIsComplete(false);
     }
   };
 
-  const handleComplete = async () => {
-    // 마지막 포커스 시간 기록
+  const handleComplete = () => {
     const finalTime = Date.now();
     setFocusTimes(prev => [...prev, finalTime]);
 
-    // 시간 간격 계산
     const timeIntervals = focusTimes.slice(1).map((time, index) => {
       return time - focusTimes[index];
     });
 
-    // 총 소요 시간 계산
     const totalTime = finalTime - focusTimes[0];
 
-    // 시간을 보기 좋게 포맷팅하는 함수
     const formatTime = (ms: number) => {
       const seconds = Math.floor(ms / 1000);
       const minutes = Math.floor(seconds / 60);
@@ -71,7 +73,6 @@ export default function Signup() {
       return `${minutes}분 ${remainingSeconds}초`;
     };
 
-    // 알림 메시지 구성
     const message = `
 실험이 종료되었습니다.
 
