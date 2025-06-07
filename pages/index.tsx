@@ -19,41 +19,25 @@ export default function Signup() {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    if (value.trim().length > 0) {
-      setShowNext(true);
-    } else {
-      setShowNext(false);
-    }
+    setShowNext(value.trim().length > 0);
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEmail(value);
-    if (value.trim().length > 0) {
-      setShowPhone(true);
-    } else {
-      setShowPhone(false);
-    }
+    setShowPhone(value.trim().length > 0);
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPhone(value);
-    if (value.trim().length > 0) {
-      setShowGender(true);
-    } else {
-      setShowGender(false);
-    }
+    setShowGender(value.trim().length > 0);
   };
 
   const handleGenderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setGender(value);
-    if (value !== "") {
-      setIsComplete(true);
-    } else {
-      setIsComplete(false);
-    }
+    setIsComplete(value !== "");
   };
 
   const handleComplete = () => {
