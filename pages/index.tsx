@@ -75,8 +75,11 @@ export default function Signup() {
   return (
     <div className="w-full min-h-screen px-6 py-16 bg-white text-black">
       <div className="max-w-sm mx-auto flex flex-col">
-        <div className="h-[200px] flex items-center">
+        <div className="h-[200px] flex items-center justify-between">
           <h1 className="text-3xl font-bold">회원가입 실험</h1>
+          <div className="text-sm text-gray-500">
+            마지막 수정: 2025-06-07 20:46
+          </div>
         </div>
 
         {/* 이름 입력 */}
