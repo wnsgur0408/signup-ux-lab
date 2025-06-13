@@ -8,51 +8,24 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build && next export",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "predeploy": "rm -rf out && next build",
+    "deploy": "touch out/.nojekyll && cp out/index.html out/404.html && gh-pages -d out --dotfiles"
   },
   "dependencies": {
-    "@google-cloud/local-auth": "^3.0.1",
-    "@types/react-native-web": "^0.19.0",
-    "firebase": "^11.7.3",
-    "googleapis": "^148.0.0",
-    "next": "15.3.2",
+    "next": "14.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-native-web": "^0.19.0",
-    "react-scripts": "5.0.1",
-    "typescript": "^4.9.5"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4.1.7",
-    "@types/node": "^16.18.0",
+    "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.2",
-    "gh-pages": "^6.3.0",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.7"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.1.0",
+    "gh-pages": "^6.1.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "4.9.5"
   }
 }
