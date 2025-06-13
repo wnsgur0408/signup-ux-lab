@@ -159,7 +159,10 @@ export default function Signup() {
     
     const examples = {
       email: '예: honggildong@gmail.com',
-      passwordConfirm: '비밀번호 재확인'
+      passwordConfirm: '비밀번호 재확인',
+      name: '예: 홍길동',
+      phone: '예: 010-1234-5678',
+      birthdate: '예: 900101'
     };
 
     return examples[field as keyof typeof examples] || null;
@@ -463,7 +466,7 @@ ${getConfigDescription(config)}
           <input
             id="password"
             type="password"
-            placeholder="비밀번호"
+            placeholder={config.exampleLevel === 0 ? "비밀번호" : ""}
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
             onFocus={handleFocus}
@@ -512,7 +515,7 @@ ${getConfigDescription(config)}
               <input
                 id="name"
                 type="text"
-                placeholder="홍길동"
+                placeholder={config.exampleLevel === 0 ? "홍길동" : ""}
                 value={formData.name}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 onFocus={handleFocus}
@@ -520,6 +523,9 @@ ${getConfigDescription(config)}
                 style={getInputStyle()}
                 className="focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
+              {config.exampleLevel === 1 && (
+                <div className="text-gray-500 mt-1">{getExampleText('name')}</div>
+              )}
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
@@ -529,7 +535,7 @@ ${getConfigDescription(config)}
               <input
                 id="phone"
                 type="tel"
-                placeholder="010-0000-0000"
+                placeholder={config.exampleLevel === 0 ? "010-0000-0000" : ""}
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 onFocus={handleFocus}
@@ -537,6 +543,9 @@ ${getConfigDescription(config)}
                 style={getInputStyle()}
                 className="focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
+              {config.exampleLevel === 1 && (
+                <div className="text-gray-500 mt-1">{getExampleText('phone')}</div>
+              )}
             </div>
 
             <div style={{ marginBottom: '2rem' }}>
@@ -546,7 +555,7 @@ ${getConfigDescription(config)}
               <input
                 id="birthdate"
                 type="text"
-                placeholder="YYMMDD"
+                placeholder={config.exampleLevel === 0 ? "YYMMDD" : ""}
                 maxLength={6}
                 value={formData.birthdate}
                 onChange={(e) => {
@@ -557,6 +566,9 @@ ${getConfigDescription(config)}
                 style={getInputStyle()}
                 className="focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
+              {config.exampleLevel === 1 && (
+                <div className="text-gray-500 mt-1">{getExampleText('birthdate')}</div>
+              )}
             </div>
           </>
         )}
