@@ -21,7 +21,6 @@ const allExperimentConfigs: ExperimentConfig[] = [
 
 
 export default function Signup() {
-  const [participantId, setParticipantId] = useState<string>(''); // 1-4
   const [currentExperimentIndex, setCurrentExperimentIndex] = useState(0); // 0-7 for each participant's 8 experiments
   const [isExperimentSessionStarted, setIsExperimentSessionStarted] = useState(false); // Overall session
   const [showResults, setShowResults] = useState(false);
@@ -33,8 +32,6 @@ export default function Signup() {
   } | null>(null);
   const [shuffledExperimentOrder, setShuffledExperimentOrder] = useState<number[]>([]); // New state for shuffled order
 
-  // currentStep and handleNextStep are no longer needed as depth is fixed to 'single'
-  // const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -163,10 +160,6 @@ export default function Signup() {
   };
 
   const handleStartSession = () => {
-    if (!participantId || parseInt(participantId) < 1 || parseInt(participantId) > 4) {
-      alert("유효한 실험자 번호(1-4)를 입력해주세요.");
-      return;
-    }
     setIsExperimentSessionStarted(true);
     setCurrentExperimentIndex(0);
     setFormData({
@@ -197,12 +190,6 @@ export default function Signup() {
 
     handleFocus();
   };
-
-  // handleNextStep is no longer needed
-  // const handleNextStep = () => {
-  //   handleFocus();
-  //   setCurrentStep(prev => prev + 1);
-  // };
 
   const handleCompleteCurrentExperiment = () => {
     const finalTime = Date.now();
@@ -257,12 +244,9 @@ export default function Signup() {
   };
 
   const handleResetSession = () => {
-    setParticipantId('');
-    setCurrentExperimentIndex(0);
     setIsExperimentSessionStarted(false);
     setShowResults(false);
     setExperimentResults(null);
-    // setCurrentStep(1); // Not needed
     setFormData({
       email: "",
       password: "",
@@ -299,48 +283,47 @@ export default function Signup() {
     };
   };
 
-  // --- Render Logic ---
-
-  // Result display after each experiment
-  if (showResults && experimentResults) {
-    const { config, timeIntervals, totalTime, runNumber } = experimentResults;
-
-    const formatTime = (ms: number, showMinutes = false) => {
-      const seconds = ms / 1000;
-      if (showMinutes) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = (seconds % 60).toFixed(2);
-        return `${minutes}분 ${remainingSeconds}초`;
+  const getConfigDescription = (expConfig: ExperimentConfig) => {
+    const configMap = {
+      motion: {
+        'all-at-once': '모든 필드 한번에 표시',
+        'grouped': '그룹화된 표시'
       }
-      return `${seconds.toFixed(2)}초`;
     };
 
-    const getConfigDescription = (expConfig: ExperimentConfig) => {
-      const configMap = {
-        motion: {
-          'all-at-once': '모든 필드 한번에 표시',
-          'grouped': '그룹화된 표시'
-        }
-      };
-
-      return `
+    return `
 실험 설정:
 - 동작 모션: ${configMap.motion[expConfig.motion]}
 - 필드 크기: 기본 크기
 - 단계 수: 1단계
 - 입력 필드 색상: 흰색 배경
 - 생년월일 입력 방식: 6자리 숫자
-      `.trim();
-    };
+    `.trim();
+  };
 
-    const getSequenceNumber = (expConfig: ExperimentConfig) => {
-      const motionVal = expConfig.motion === 'grouped' ? '1' : '0';
-      const validationVal = expConfig.validationLevel.toString();
-      const exampleVal = expConfig.exampleLevel.toString();
-      return `${motionVal}${validationVal}${exampleVal}`;
-    };
+  const getSequenceNumber = (expConfig: ExperimentConfig) => {
+    const motionVal = expConfig.motion === 'grouped' ? '1' : '0';
+    const validationVal = expConfig.validationLevel.toString();
+    const exampleVal = expConfig.exampleLevel.toString();
+    return `${motionVal}${validationVal}${exampleVal}`;
+  };
 
-    // Since depth is fixed to 'single', no need for conditional rendering here
+  const formatTime = (ms: number, showMinutes = false) => {
+    const seconds = ms / 1000;
+    if (showMinutes) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = (seconds % 60).toFixed(2);
+      return `${minutes}분 ${remainingSeconds}초`;
+    }
+    return `${seconds.toFixed(2)}초`;
+  };
+
+  // --- Render Logic ---
+
+  // Result display after each experiment
+  if (showResults && experimentResults) {
+    const { config, timeIntervals, totalTime, runNumber } = experimentResults;
+
     const resultsContent = `
 ${runNumber}번째 회원가입 절차 완료!
 일련번호: ${getSequenceNumber(config)}
@@ -357,7 +340,7 @@ ${getConfigDescription(config)}
 지역 → 완료: ${formatTime(timeIntervals[6])}
 
 총 소요 시간: ${formatTime(totalTime, true)}
-      `.trim();
+    `.trim();
 
     return (
       <div className="w-full min-h-screen px-6 py-16 bg-white text-black">
@@ -402,38 +385,15 @@ ${getConfigDescription(config)}
           </div>
 
           <div className="space-y-6">
-            <div>
-              <label htmlFor="participantId" className="block text-xl font-medium mb-2">
-                실험자 번호 (1-4)를 입력하세요
-              </label>
-              <input
-                id="participantId"
-                type="number"
-                min="1"
-                max="4"
-                value={participantId}
-                onChange={(e) => setParticipantId(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="예: 1"
-              />
+            <div className="flex flex-col items-center">
+              <h2 className="text-2xl font-bold mb-4">실험 시작하기</h2>
+              <button
+                onClick={handleStartSession}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600 transition-colors"
+              >
+                실험 시작하기
+              </button>
             </div>
-
-            <button
-              onClick={handleStartSession}
-              style={{
-                width: '100%',
-                height: '3rem',
-                fontSize: '1.2rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '0.75rem',
-                cursor: 'pointer',
-              }}
-              className="hover:bg-blue-600 transition-colors"
-            >
-              실험 시작
-            </button>
           </div>
         </div>
       </div>
