@@ -56,6 +56,12 @@ export default function Signup() {
     }
   });
 
+  const [allExperimentSummary, setAllExperimentSummary] = useState<Array<{
+    runNumber: number;
+    sequenceNumber: string;
+    totalTime: number;
+  }>>([]); // 모든 실험 결과를 요약하기 위한 새로운 상태
+
   // Utility function to shuffle an array
   const shuffleArray = (array: number[]) => {
     const shuffled = [...array];
@@ -209,6 +215,16 @@ export default function Signup() {
       runNumber: currentExperimentIndex + 1 // 1-indexed run number for display
     });
     setShowResults(true);
+
+    // 현재 실험 결과를 요약하여 allExperimentSummary에 추가
+    setAllExperimentSummary(prev => [
+      ...prev,
+      {
+        runNumber: currentExperimentIndex + 1,
+        sequenceNumber: getSequenceNumber(config),
+        totalTime: totalTime,
+      }
+    ]);
   };
 
   const handleNextExperiment = () => {
@@ -238,8 +254,9 @@ export default function Signup() {
       });
       handleFocus();
     } else {
-      alert("모든 실험이 완료되었습니다. 참여해주셔서 감사합니다!");
-      handleResetSession();
+      // 모든 실험이 완료되었을 때 요약 화면 표시
+      setShowResults(false); // 개별 결과 화면 숨기기
+      setIsExperimentSessionStarted(false); // 세션 종료 (요약 화면 표시를 위함)
     }
   };
 
@@ -269,6 +286,7 @@ export default function Signup() {
         isChecked: false
       }
     });
+    setAllExperimentSummary([]); // 모든 실험 요약 결과 초기화
   };
 
   const getInputStyle = () => {
@@ -284,21 +302,10 @@ export default function Signup() {
   };
 
   const getConfigDescription = (expConfig: ExperimentConfig) => {
-    const configMap = {
-      motion: {
-        'all-at-once': '모든 필드 한번에 표시',
-        'grouped': '그룹화된 표시'
-      }
-    };
-
-    return `
-실험 설정:
-- 동작 모션: ${configMap.motion[expConfig.motion]}
-- 필드 크기: 기본 크기
-- 단계 수: 1단계
-- 입력 필드 색상: 흰색 배경
-- 생년월일 입력 방식: 6자리 숫자
-    `.trim();
+    const motionText = expConfig.motion === 'grouped' ? '그룹화' : '한번에';
+    const validationText = expConfig.validationLevel === 1 ? '유효성 검사 있음' : '유효성 검사 없음';
+    const exampleText = expConfig.exampleLevel === 1 ? '예시문 있음' : '예시문 없음';
+    return `모션: ${motionText}, 유효성: ${validationText}, 예시: ${exampleText}`;
   };
 
   const getSequenceNumber = (expConfig: ExperimentConfig) => {
@@ -308,13 +315,8 @@ export default function Signup() {
     return `${motionVal}${validationVal}${exampleVal}`;
   };
 
-  const formatTime = (ms: number, showMinutes = false) => {
+  const formatTime = (ms: number) => {
     const seconds = ms / 1000;
-    if (showMinutes) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = (seconds % 60).toFixed(2);
-      return `${minutes}분 ${remainingSeconds}초`;
-    }
     return `${seconds.toFixed(2)}초`;
   };
 
@@ -322,7 +324,7 @@ export default function Signup() {
 
   // Result display after each experiment
   if (showResults && experimentResults) {
-    const { config, timeIntervals, totalTime, runNumber } = experimentResults;
+    const { config, totalTime, runNumber } = experimentResults; // timeIntervals 제거
 
     const resultsContent = `
 ${runNumber}번째 회원가입 절차 완료!
@@ -330,16 +332,7 @@ ${runNumber}번째 회원가입 절차 완료!
 
 ${getConfigDescription(config)}
 
-각 단계별 소요 시간:
-이메일 → 비밀번호: ${formatTime(timeIntervals[0])}
-비밀번호 → 이름: ${formatTime(timeIntervals[1])}
-이름 → 전화번호: ${formatTime(timeIntervals[2])}
-전화번호 → 생년월일: ${formatTime(timeIntervals[3])}
-생년월일 → 성별: ${formatTime(timeIntervals[4])}
-성별 → 지역: ${formatTime(timeIntervals[5])}
-지역 → 완료: ${formatTime(timeIntervals[6])}
-
-총 소요 시간: ${formatTime(totalTime, true)}
+총 소요 시간: ${formatTime(totalTime)}
     `.trim();
 
     return (
@@ -365,7 +358,7 @@ ${getConfigDescription(config)}
             }}
             className="hover:bg-blue-600 transition-colors"
           >
-            {currentExperimentIndex < 7 ? '다음 실험으로' : '실험 종료'}
+            {runNumber < 8 ? '다음 실험으로' : '실험 종료 및 요약 보기'}
           </button>
         </div>
       </div>
@@ -374,6 +367,31 @@ ${getConfigDescription(config)}
 
   // Initial session start screen
   if (!isExperimentSessionStarted) {
+    // 모든 실험이 완료되었을 때 요약 화면 표시
+    if (allExperimentSummary.length === 8) {
+      return (
+        <div className="w-full min-h-screen px-6 py-16 bg-white text-black">
+          <div className="max-w-2xl mx-auto">
+            <h1 className="text-3xl font-bold mb-8 text-center">모든 실험 요약</h1>
+            <ul className="list-disc list-inside mb-8 text-lg">
+              {allExperimentSummary.map((summary, index) => (
+                <li key={index} className="mb-2">
+                  {summary.runNumber}번째 회원가입 - 일련번호 {summary.sequenceNumber} - 총 소요 시간: {formatTime(summary.totalTime)}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={handleResetSession}
+              className="w-full bg-gray-400 text-white px-6 py-3 rounded-lg text-lg hover:bg-gray-500 transition-colors"
+            >
+              세션 재시작
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // 기존 실험 시작 화면
     return (
       <div className="w-full min-h-screen px-6 py-16 bg-white text-black">
         <div className="max-w-sm mx-auto flex flex-col">
